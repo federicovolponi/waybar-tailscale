@@ -1,0 +1,13 @@
+"custom/tailscale" : {
+    "exec": "~/.config/waybar/scripts/waybar-tailscale/waybar-tailscale.sh --status",
+    "on-click": "exec ~/.config/waybar/scripts/waybar-tailscale/waybar-tailscale.sh --toggle",
+    "exec-on-event": true,
+    "format": "VPN: {icon}",
+    "format-icons": {
+        "connected": "on",        
+        "stopped": "off"
+    },
+    "tooltip": true,
+    "return-type": "json",
+    "interval": 3,
+}
