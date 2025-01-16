@@ -5,7 +5,7 @@ A super simple module to show and toggle the status of [Tailscale](https://tails
 ## Installation
 At first, you need to be able to use tailscale without using `sudo`. You can do that by executing:
 ```
-tailscale set --operator=$USER 
+tailscale set --operator=$USER
 ```
 After, you can simply clone the repository in your waybar's configuration folder, or where you prefer.
 ## Configuration
@@ -17,7 +17,7 @@ In your _config_ file add a new module as the example below.
     "exec-on-event": true,
     "format": "VPN: {icon}",
     "format-icons": {
-        "connected": "on",        
+        "connected": "on",
         "stopped": "off"
     },
     "tooltip": true,
@@ -27,6 +27,16 @@ In your _config_ file add a new module as the example below.
 ```
 **Important!** Be sure to insert the correct path to the script in the _exec_ and _on-click_ fields.
 The script is executed every three seconds, but you can easily change it by modifying the _interval_ field.
+
+### Colored tooltip
+
+The status flag takes to optional parameters
+
+```bash
+waybar-tailscale.sh --status "#a6e22e" "#f92672"
+```
+
+The first being the color of active nodes, the second the color of inactive nodes. defaults are respectively `green` and `red`.
 
 ## Contributing
 Even if this is a very trivial module, requests for new features and any issues you might find are welcomed.
