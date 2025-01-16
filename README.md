@@ -28,9 +28,17 @@ In your _config_ file add a new module as the example below.
 **Important!** Be sure to insert the correct path to the script in the _exec_ and _on-click_ fields.
 The script is executed every three seconds, but you can easily change it by modifying the _interval_ field.
 
+### Exit node
+
+`exit-node` can be included by changing the `format` key to:
+
+```json
+"format": "VPN: {icon} exit-node: {}",
+```
+
 ### Colored tooltip
 
-The status flag takes to optional parameters
+The status flag takes two optional parameters
 
 ```bash
 waybar-tailscale.sh --status "#a6e22e" "#f92672"
