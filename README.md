@@ -33,7 +33,7 @@ The script is executed every three seconds, but you can easily change it by modi
 `exit-node` can be included by changing the `format` key to:
 
 ```json
-"format": "VPN: {icon} exit-node: {}",
+"format": "VPN: {icon} exit-node: {text}",
 ```
 
 ### Colored tooltip
