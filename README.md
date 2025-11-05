@@ -4,13 +4,13 @@
 A super simple module to show and toggle the status of [Tailscale](https://tailscale.com/) on [Waybar](https://github.com/Alexays/Waybar).
 ## Installation
 At first, you need to be able to use tailscale without using `sudo`. You can do that by executing:
-```
+```bash
 tailscale set --operator=$USER
 ```
 After, you can simply clone the repository in your waybar's configuration folder, or where you prefer.
 ## Configuration
 In your _config_ file add a new module as the example below.
-```
+```json
 "custom/tailscale" : {
     "exec": "~/.config/waybar/scripts/waybar-tailscale/waybar-tailscale.sh --status",
     "on-click": "exec ~/.config/waybar/scripts/waybar-tailscale/waybar-tailscale.sh --toggle",
