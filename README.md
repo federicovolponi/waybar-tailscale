@@ -14,6 +14,7 @@ In your _config_ file add a new module as the example below.
 "custom/tailscale" : {
     "exec": "~/.config/waybar/scripts/waybar-tailscale/waybar-tailscale.sh --status",
     "on-click": "exec ~/.config/waybar/scripts/waybar-tailscale/waybar-tailscale.sh --toggle",
+    "on-click-right": "exec ~/.config/waybar/waybar-tailscale.sh --select-exit-node",
     "exec-on-event": true,
     "format": "VPN: {icon}",
     "format-icons": {
@@ -34,6 +35,17 @@ The script is executed every three seconds, but you can easily change it by modi
 
 ```json
 "format": "VPN: {icon} exit-node: {text}",
+```
+
+### Exit Node Selection
+
+You can use right-click to select a exit node, its currently set to use `wofi` to display the exit-node selection box but you can update `MENU_CMD` to any of the below based on what you have installed. 
+
+```bash
+wofi --dmenu --prompt 'Select Exit Node'
+rofi -dmenu -p 'Select Exit Node'
+fuzzel --dmenu --prompt 'Select Exit Node'
+dmenu -p 'Select Exit Node'
 ```
 
 ### Colored tooltip
