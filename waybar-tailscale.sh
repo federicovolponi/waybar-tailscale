@@ -51,9 +51,41 @@ case $1 in
         if tailscale_status; then
             T=${2:-"green"}
             F=${3:-"red"}
-            peers=$(tailscale status --json | jq -r --arg T "'$T'" --arg F "'$F'" '.Peer[]? | ("<span color=" + (if .Online then $T else $F end) + ">" + (.DNSName | split(".")[0]) + "</span>")' | tr '\n' '\r')
-            exitnode=$(tailscale status --json | jq -r '.Peer[]? | select(.ExitNode == true).DNSName | split(".")[0]')
-            echo "{\"text\":\"${exitnode:-none}\",\"class\":\"connected\",\"alt\":\"connected\", \"tooltip\": \"${peers}\"}"
+            I=${4:-"none"}
+
+            status_json=$(tailscale status --json)
+
+            case "$I" in
+                ipv6)
+                    ip_index="-1"
+                    display_text=$(jq -r '.Self.TailscaleIPs[-1]' <<< "$status_json")
+                    ;;
+                ipv4)
+                    ip_index="0"
+                    display_text=$(jq -r '.Self.TailscaleIPs[0]' <<< "$status_json")
+                    ;;
+                *)
+                    ip_index=""
+                    display_text=""
+                    ;;
+            esac
+
+            if [ -n "$ip_index" ]; then
+                peers=$(jq -r --arg T "$T" --arg F "$F" --arg idx "$ip_index" '
+                    .Peer[]? | 
+                    "<span color=\"" + (if .Online then $T else $F end) + "\">" + 
+                    (.DNSName | split(".")[0]) + " (" + .TailscaleIPs[$idx|tonumber] + ")" + 
+                    "</span>"' <<< "$status_json" | tr '\n' '\r')
+            else
+                peers=$(jq -r --arg T "$T" --arg F "$F" '
+                    .Peer[]? | 
+                    "<span color=\"" + (if .Online then $T else $F end) + "\">" + 
+                    (.DNSName | split(".")[0]) + 
+                    "</span>"' <<< "$status_json" | tr '\n' '\r')
+            fi
+
+            jq -nc --arg txt "$display_text" --arg tip "$peers" \
+                '{"text": $txt, "class": "connected", "alt": "connected", "tooltip": $tip}'
         else
             echo "{\"text\":\"\",\"class\":\"stopped\",\"alt\":\"stopped\", \"tooltip\": \"The VPN is not active.\"}"
         fi
