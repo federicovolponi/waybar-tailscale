@@ -52,55 +52,49 @@ case $1 in
             T="green"
             F="red"
             I="none"
-            
-            local colors=()
+            colors=()
+
             for arg in "${@:2}"; do
                 case "$arg" in
-                    ipv4|ipv6) I="$arg" ;;
-                    *) [[ -n "$arg" ]] && colors+=("$arg") ;;
+                    ipv4|ipv6) 
+                        I="$arg" 
+                        ;;
+                    *) 
+                        if [[ -n "$arg" ]]; then
+                            colors+=("$arg")
+                        fi
+                        ;;
                 esac
             done
 
-            if [ ${#colors[@]} -eq 1 ]; then
-                T="${colors[0]}"
-                F="red"
-            elif [ ${#colors[@]} -ge 2 ]; then
-                T="${colors[0]}"
-                F="${colors[1]}"
-            fi
+            if [ ${#colors[@]} -ge 1 ]; then T="${colors[0]}"; fi
+            if [ ${#colors[@]} -ge 2 ]; then F="${colors[1]}"; fi
 
             status_json=$(tailscale status --json)
 
             case "$I" in
-                ipv6)
-                    ip_index="-1"
-                    display_text=$(jq -r '.Self.TailscaleIPs[-1]' <<< "$status_json")
-                    ;;
-                ipv4)
-                    ip_index="0"
-                    display_text=$(jq -r '.Self.TailscaleIPs[0]' <<< "$status_json")
-                    ;;
-                *)
-                    ip_index=""
-                    display_text=""
-                    ;;
+                ipv4) ip_idx="0" ;;
+                ipv6) ip_idx="-1" ;;
+                *)    ip_idx="" ;;
             esac
 
-            if [ -n "$ip_index" ]; then
-                peers=$(jq -r --arg T "$T" --arg F "$F" --arg idx "$ip_index" '
+            if [[ -n "$ip_idx" ]]; then
+                peers=$(jq -r --arg T "$T" --arg F "$F" --arg idx "$ip_idx" '
                     .Peer[]? | 
                     "<span color=\"" + (if .Online then $T else $F end) + "\">" + 
-                    (.DNSName | split(".")[0]) + " (" + .TailscaleIPs[$idx|tonumber] + ")" + 
-                    "</span>"' <<< "$status_json" | tr '\n' '\r')
+                    (.DNSName | split(".")[0]) + " (" + .TailscaleIPs[$idx|tonumber] + ")</span>"
+                ' <<< "$status_json" | tr '\n' '\r')
             else
                 peers=$(jq -r --arg T "$T" --arg F "$F" '
                     .Peer[]? | 
                     "<span color=\"" + (if .Online then $T else $F end) + "\">" + 
-                    (.DNSName | split(".")[0]) + 
-                    "</span>"' <<< "$status_json" | tr '\n' '\r')
+                    (.DNSName | split(".")[0]) + "</span>"
+                ' <<< "$status_json" | tr '\n' '\r')
             fi
 
-            jq -nc --arg txt "$display_text" --arg tip "$peers" \
+            exitnode=$(jq -r '.Peer[]? | select(.ExitNode == true).DNSName | split(".")[0]' <<< "$status_json")
+
+            jq -nc --arg txt "${exitnode:-none}" --arg tip "$peers" \
                 '{"text": $txt, "class": "connected", "alt": "connected", "tooltip": $tip}'
         else
             echo "{\"text\":\"\",\"class\":\"stopped\",\"alt\":\"stopped\", \"tooltip\": \"The VPN is not active.\"}"
