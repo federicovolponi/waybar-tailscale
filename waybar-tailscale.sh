@@ -49,9 +49,25 @@ select_exit_node() {
 case $1 in
     --status)
         if tailscale_status; then
-            T=${2:-"green"}
-            F=${3:-"red"}
-            I=${4:-"none"}
+            T="green"
+            F="red"
+            I="none"
+            
+            local colors=()
+            for arg in "${@:2}"; do
+                case "$arg" in
+                    ipv4|ipv6) I="$arg" ;;
+                    *) [[ -n "$arg" ]] && colors+=("$arg") ;;
+                esac
+            done
+
+            if [ ${#colors[@]} -eq 1 ]; then
+                T="${colors[0]}"
+                F="red"
+            elif [ ${#colors[@]} -ge 2 ]; then
+                T="${colors[0]}"
+                F="${colors[1]}"
+            fi
 
             status_json=$(tailscale status --json)
 
