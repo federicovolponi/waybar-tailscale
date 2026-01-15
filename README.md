@@ -69,5 +69,9 @@ waybar-tailscale.sh --status "#a6e22e" "#f92672" 'ipv4'
 waybar-tailscale.sh --status "#a6e22e" "#f92672" 'ipv6'
 ```
 
+```bash
+waybar-tailscale.sh --status 'ipv6'
+```
+
 ## Contributing
 Even if this is a very trivial module, requests for new features and any issues you might find are welcomed.
