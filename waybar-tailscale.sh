@@ -73,23 +73,23 @@ case $1 in
             status_json=$(tailscale status --json)
 
             case "$I" in
-                ipv4) ip_idx="0" ;;
-                ipv6) ip_idx="-1" ;;
-                *)    ip_idx="" ;;
+                ipv4) ip_index="0" ;;
+                ipv6) ip_index="-1" ;;
+                *)    ip_index="" ;;
             esac
 
-            if [[ -n "$ip_idx" ]]; then
-                peers=$(jq -r --arg T "$T" --arg F "$F" --arg idx "$ip_idx" '
+            if [[ -n "$ip_index" ]]; then
+                peers=$(jq -r --arg T "$T" --arg F "$F" --arg Index "$ip_index" '
                     .Peer[]? | 
                     "<span color=\"" + (if .Online then $T else $F end) + "\">" + 
-                    (.DNSName | split(".")[0]) + " (" + .TailscaleIPs[$idx|tonumber] + ")</span>"
-                ' <<< "$status_json" | tr '\n' '\r')
+                    (.DNSName | split(".")[0]) + " (" + .TailscaleIPs[$Index|tonumber] + ")</span>"
+                ' <<< "$status_json")
             else
                 peers=$(jq -r --arg T "$T" --arg F "$F" '
                     .Peer[]? | 
                     "<span color=\"" + (if .Online then $T else $F end) + "\">" + 
                     (.DNSName | split(".")[0]) + "</span>"
-                ' <<< "$status_json" | tr '\n' '\r')
+                ' <<< "$status_json")
             fi
 
             exitnode=$(jq -r '.Peer[]? | select(.ExitNode == true).DNSName | split(".")[0]' <<< "$status_json")
