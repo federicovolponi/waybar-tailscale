@@ -3,7 +3,7 @@
 MENU_CMD="wofi --dmenu --prompt 'Select Exit Node'"  # Change to rofi/fuzzel/dmenu as needed
 
 tailscale_status() {
-    tailscale status --json | jq -r '.BackendState == "Running"' | grep -q true
+    tailscale status --json | jq -e '.BackendState == "Running"' > /dev/null
 }
 
 toggle_status() {
@@ -55,9 +55,11 @@ case $1 in
             colors=()
 
             for arg in "${@:2}"; do
-                case "$arg" in
+                arg_lower=$(echo "$arg" | tr '[:upper:]' '[:lower:]' | tr -d '\n')
+
+                case "$arg_lower" in
                     ipv4|ipv6) 
-                        I="$arg" 
+                        I="$arg_lower" 
                         ;;
                     *) 
                         if [[ -n "$arg" ]]; then
