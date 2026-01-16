@@ -82,12 +82,12 @@ case $1 in
                 peers=$(jq -r --arg T "$T" --arg F "$F" --arg Index "$ip_index" '
                     .Peer[]? | 
                     "<span color=\"" + (if .Online then $T else $F end) + "\">" + 
-                    (.DNSName | split(".")[0]) + " (" + .TailscaleIPs[$Index|tonumber] + ")</span>"
+                    (.DNSName | split(".")[0]) + ": (" + .TailscaleIPs[$Index|tonumber] + ")</span>"
                 ' <<< "$status_json")
             else
                 peers=$(jq -r --arg T "$T" --arg F "$F" '
                     .Peer[]? | 
-                    "<span color=\"" + (if .Online then $T else $F end) + "\">" + 
+                    "<span color=\"" + (if .Online then $T else $F end) + "\">" +
                     (.DNSName | split(".")[0]) + "</span>"
                 ' <<< "$status_json")
             fi
