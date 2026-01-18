@@ -57,6 +57,21 @@ waybar-tailscale.sh --status "#a6e22e" "#f92672"
 ```
 
 The first being the color of active nodes, the second the color of inactive nodes. defaults are respectively `green` and `red`.
+### Adding Ip to the tool tip
+
+By default no ip address will be shown in the tool tip. If you want to see the `ipv4` or `ipv6` adress simply pass the string to the script.
+
+```bash
+waybar-tailscale.sh --status "#a6e22e" "#f92672" 'ipv4'
+```
+
+```bash
+waybar-tailscale.sh --status "#a6e22e" "#f92672" 'ipv6'
+```
+
+```bash
+waybar-tailscale.sh --status 'ipv6'
+```
 
 ## Contributing
 Even if this is a very trivial module, requests for new features and any issues you might find are welcomed.
