@@ -96,7 +96,7 @@ case $1 in
 
             exitnode=$(jq -r '.Peer[]? | select(.ExitNode == true).DNSName | split(".")[0]' <<< "$status_json")
 
-            jq -nc --arg txt "${exitnode:-none}" --arg tip "$peers" \
+            jq -nc --arg txt " exit-node: ${exitnode:-none}" --arg tip "$peers" \
                 '{"text": $txt, "class": "connected", "alt": "connected", "tooltip": $tip}'
         else
             echo "{\"text\":\"\",\"class\":\"stopped\",\"alt\":\"stopped\", \"tooltip\": \"The VPN is not active.\"}"
