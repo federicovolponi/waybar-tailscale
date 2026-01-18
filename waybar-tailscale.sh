@@ -25,8 +25,7 @@ select_exit_node() {
     local nodes
     nodes=$(tailscale status --json | jq -r '
         .Peer[] | select(.ExitNodeOption == true) |
-        .DNSName | split(".")[0]
-    ')
+        .DNSName')
 
     # Add option to disable exit node
     nodes="None (disable exit node)"$'\n'"$nodes"
