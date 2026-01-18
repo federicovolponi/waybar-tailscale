@@ -1,15 +1,27 @@
-# waybar-tailscale
-![VPN](https://github.com/federicovolponi/waybar-tailscale/blob/main/assets/vpnonoff.png)
+<h1>
+    <p align="center">
+waybar-tailscale
+</p>
+</h1>
+<p align="center">
+A super simple module to manage <a href="https://tailscale.com/"><b>Tailscale</b></a> on <a href="https://github.com/Alexays/Waybar"><b>Waybar</b></a>.
+</p>
 
-A super simple module to show and toggle the status of [Tailscale](https://tailscale.com/) on [Waybar](https://github.com/Alexays/Waybar).
+<p align="center"><img src="https://github.com/federicovolponi/waybar-tailscale/blob/main/assets/vpn-on.png" alt="AppFlowy Kanban Board for To-dos"  /></p>
+
+## ⭐️ What can it do?
+- Show Tailscale status and your online and offline devices
+- Toggle on/off the VPN
+- Show and select an exit node
 ## Installation
-At first, you need to be able to use tailscale without using `sudo`. You can do that by executing:
+Initially, you need to be able to use Tailscale without using `sudo`. You can do that by executing:
 ```bash
 tailscale set --operator=$USER
 ```
-After, you can simply clone the repository in your waybar's configuration folder, or where you prefer.
+After, you can clone the repository in your Waybar's configuration folder, or where you prefer.
+
 ## Configuration
-In your _config_ file add a new module as the example below.
+In your _config_ file add a new module, as shown in the example below.
 ```json
 "custom/tailscale" : {
     "exec": "~/.config/waybar/scripts/waybar-tailscale/waybar-tailscale.sh --status",
@@ -26,12 +38,12 @@ In your _config_ file add a new module as the example below.
     "interval": 3,
 }
 ```
-**Important!** Be sure to insert the correct path to the script in the _exec_ and _on-click_ fields.
+**Important!** Be sure to insert the correct path to the script in the _exec_,  _on-click_, and _on-click-right_ fields.
 The script is executed every three seconds, but you can easily change it by modifying the _interval_ field.
 
 ### Exit node
 
-`exit-node` can be included by changing the `format` key to:
+The `exit-node` can be included by changing the `format` key to:
 
 ```json
 "format": "VPN: {icon}{text}",
@@ -39,7 +51,8 @@ The script is executed every three seconds, but you can easily change it by modi
 
 ### Exit Node Selection
 
-You can use right-click to select a exit node, its currently set to use `wofi` to display the exit-node selection box but you can update `MENU_CMD` to any of the below based on what you have installed. 
+You can use right-click to select an exit node. 
+`wofi`  it's currently set to display the exit-node selection box, but you can update `MENU_CMD` in the script to any of the below based on what you have installed: 
 
 ```bash
 wofi --dmenu --prompt 'Select Exit Node'
@@ -56,10 +69,10 @@ The status flag takes two optional parameters
 waybar-tailscale.sh --status "#a6e22e" "#f92672"
 ```
 
-The first being the color of active nodes, the second the color of inactive nodes. defaults are respectively `green` and `red`.
-### Adding Ip to the tool tip
+The first is the color of active nodes, the second the color of inactive nodes. Defaults are respectively `green` and `red`.
 
-By default no ip address will be shown in the tool tip. If you want to see the `ipv4` or `ipv6` adress simply pass the string to the script.
+### Adding IP to the tooltip
+By default, no IP address will be shown in the tooltip. If you want to see the `ipv4` or `ipv6` addresses, pass one of the following arguments to the script:
 
 ```bash
 waybar-tailscale.sh --status "#a6e22e" "#f92672" 'ipv4'
@@ -74,4 +87,4 @@ waybar-tailscale.sh --status 'ipv6'
 ```
 
 ## Contributing
-Even if this is a very trivial module, requests for new features and any issues you might find are welcomed.
+Even if this is a very trivial module, feel free to propose new features and point out any problems!
