@@ -1,0 +1,20 @@
+/* if you want the tailscale-logo add 
+ * @import "waybar-tailscale/tailscale.css";
+ * to your style.css, don't use with "format-icons" in config.json */
+
+#custom-tailscale {
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    min-width: 24px;
+}
+
+/* if return is {"class": "connected"} */
+#custom-tailscale.connected {
+    background-image: url("icon/tailscale_on.png");
+}
+
+/* if return is {"class": "stopped"} */
+#custom-tailscale.stopped {
+    background-image: url("icon/tailscale_off.png");
+}
