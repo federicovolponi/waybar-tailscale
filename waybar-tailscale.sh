@@ -172,7 +172,7 @@ case $1 in
     class_json='"connected"'
     if [[ "$SHOW_VERSION" == "true" ]]; then
       tailscale_version_info
-      version_line="$VERSION_LINE"$'\n\n'
+      version_line="$VERSION_LINE"$'\n'
       if [[ "$UPDATE_AVAILABLE" == "true" ]]; then
         alt="update-available"
         class_json='["connected", "update-available"]'
