@@ -76,6 +76,27 @@ tailscale_version_info() {
   fi
 }
 
+tailscale_autoupdate_info() {
+  local apply
+
+  apply=$(tailscale debug prefs | jq -r '.AutoUpdate.Apply')
+
+  case "$apply" in
+  true)
+    AUTOUPDATE_LINE="Auto-update: enabled"
+    AUTOUPDATE_DISABLED="false"
+    ;;
+  false)
+    AUTOUPDATE_LINE="Auto-update: disabled"
+    AUTOUPDATE_DISABLED="true"
+    ;;
+  *)
+    AUTOUPDATE_LINE="Auto-update: not configured"
+    AUTOUPDATE_DISABLED="false"
+    ;;
+  esac
+}
+
 switch_tailnet() {
   local tailnets
   local active
@@ -113,6 +134,7 @@ case $1 in
     F="red"
     I="none"
     SHOW_VERSION="false"
+    SHOW_AUTOUPDATE="false"
     colors=()
 
     for arg in "${@:2}"; do
@@ -124,6 +146,9 @@ case $1 in
         ;;
       version)
         SHOW_VERSION="true"
+        ;;
+      autoupdate)
+        SHOW_AUTOUPDATE="true"
         ;;
       *)
         if [[ -n "$arg" ]]; then
@@ -168,18 +193,37 @@ case $1 in
     exitnode=$(jq -r '.Peer[]? | select(.ExitNode == true).DNSName | split(".")[0]' <<<"$status_json")
 
     version_line=""
+    autoupdate_line=""
     alt="connected"
-    class_json='"connected"'
+    classes=("connected")
+
     if [[ "$SHOW_VERSION" == "true" ]]; then
       tailscale_version_info
       version_line="$VERSION_LINE"$'\n'
       if [[ "$UPDATE_AVAILABLE" == "true" ]]; then
         alt="update-available"
-        class_json='["connected", "update-available"]'
+        classes+=("update-available")
       fi
     fi
 
-    jq -nc --arg txt " exit-node: ${exitnode:-none}" --arg tip "$version_line""Tailnet: ""$tailnet"$'\n\n'"$self"$'\n'"$peers" --arg alt "$alt" --argjson class "$class_json" \
+    if [[ "$SHOW_AUTOUPDATE" == "true" ]]; then
+      tailscale_autoupdate_info
+      autoupdate_line="$AUTOUPDATE_LINE"$'\n'
+      if [[ "$AUTOUPDATE_DISABLED" == "true" ]]; then
+        if [[ "$alt" == "connected" ]]; then
+          alt="auto-update-disabled"
+        fi
+        classes+=("auto-update-disabled")
+      fi
+    fi
+
+    if [[ ${#classes[@]} -gt 1 ]]; then
+      class_json=$(printf '%s\n' "${classes[@]}" | jq -R . | jq -sc .)
+    else
+      class_json='"connected"'
+    fi
+
+    jq -nc --arg txt " exit-node: ${exitnode:-none}" --arg tip "$version_line""$autoupdate_line""Tailnet: ""$tailnet"$'\n\n'"$self"$'\n'"$peers" --arg alt "$alt" --argjson class "$class_json" \
       '{"text": $txt, "class": $class, "alt": $alt, "tooltip": $tip}'
   else
     echo "{\"text\":\"\",\"class\":\"stopped\",\"alt\":\"stopped\", \"tooltip\": \"The VPN is not active.\"}"
