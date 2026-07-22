@@ -11,6 +11,7 @@ A super simple module to manage <a href="https://tailscale.com/"><b>Tailscale</b
 ## ⭐️ What can it do?
 
 - Show Tailscale status and your online and offline devices
+- Shows Current version and available updates
 - Toggle on/off the VPN
 - Show and select an exit node
 
@@ -102,6 +103,18 @@ waybar-tailscale.sh --status "#a6e22e" "#f92672" 'ipv6'
 ```bash
 waybar-tailscale.sh --status 'ipv6'
 ```
+
+### Showing the Tailscale version
+
+By default, the tooltip does not show your Tailscale version. If you want to see the installed version and whether it is up to date with the latest release, pass the `version` argument:
+
+```bash
+waybar-tailscale.sh --status "#a6e22e" "#f92672" 'ipv4' 'version'
+```
+
+Checking the latest release requires a network request, so the result is cached for `VERSION_CHECK_TTL` seconds (default `3600`, one hour) to avoid hitting the network on every poll. You can change this at the top of `waybar-tailscale.sh`, or set it to `0` to check on every run instead.
+
+When an update is available, the module also returns an extra `update-available` class and `alt` value alongside `connected`, so you can show a distinct icon for it. If you're using `format-icons`, add an `update-available` key as shown in `sample-config`. If you're using `tailscale.css`, it already ships with a `.update-available` rule that tints the icon.
 
 ## Contributing
 
