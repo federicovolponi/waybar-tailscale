@@ -116,6 +116,16 @@ Checking the latest release requires a network request, so the result is cached 
 
 When an update is available, the module also returns an extra `update-available` class and `alt` value alongside `connected`, so you can show a distinct icon for it. If you're using `format-icons`, add an `update-available` key as shown in `sample-config`. If you're using `tailscale.css`, it already ships with a `.update-available` rule that tints the icon.
 
+### Checking if auto-update is enabled
+
+Tailscale can update itself automatically. To show whether that's enabled on this machine, pass the `autoupdate` argument:
+
+```bash
+waybar-tailscale.sh --status "#a6e22e" "#f92672" 'ipv4' 'autoupdate'
+```
+
+If auto-update is explicitly disabled, the module returns an extra `auto-update-disabled` class and `alt` value, the same way it does for `update-available`. If auto-update isn't supported or configured on this machine, the tooltip just says so with no icon change. Add an `auto-update-disabled` key to `format-icons`, or use the `.auto-update-disabled` rule already in `tailscale.css`, to show a distinct icon.
+
 ## Contributing
 
 Even if this is a very trivial module, feel free to propose new features and point out any problems!

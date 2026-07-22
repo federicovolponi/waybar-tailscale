@@ -10,6 +10,7 @@
   //     "connected": "󱠾 󰕥 ",
   //     "stopped": "󱠾  ",
   //     "update-available": "󱠾 ⬆",
+  //     "auto-update-disabled": "󱠾 ⚠",
   // },
   "tooltip": true,
   "return-type": "json",
