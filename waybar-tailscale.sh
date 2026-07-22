@@ -2,6 +2,7 @@
 
 # MENU_CMD="wofi --dmenu --prompt 'Menue'" # Change to rofi/fuzzel/dmenu as needed
 MENU_CMD="walker --dmenu 'Menue'" # Change to rofi/fuzzel/dmenu as needed
+VERSION_CHECK_TTL=3600 # seconds between upstream version checks
 
 tailscale_status() {
   tailscale status --json | jq -e '.BackendState == "Running"' >/dev/null
@@ -46,6 +47,35 @@ select_exit_node() {
   fi
 }
 
+tailscale_version_info() {
+  local cache_file="${TMPDIR:-/tmp}/waybar-tailscale-upstream-version"
+  local current upstream
+
+  current=$(tailscale version --json | jq -r '.majorMinorPatch')
+
+  if [[ -f "$cache_file" ]] && (( $(date +%s) - $(stat -c %Y "$cache_file") < VERSION_CHECK_TTL )); then
+    upstream=$(<"$cache_file")
+  else
+    upstream=$(tailscale version --upstream --json 2>/dev/null | jq -r '.upstream // empty')
+    if [[ -n "$upstream" ]]; then
+      echo "$upstream" >"$cache_file"
+    elif [[ -f "$cache_file" ]]; then
+      upstream=$(<"$cache_file")
+    fi
+  fi
+
+  if [[ -z "$upstream" ]]; then
+    VERSION_LINE="Tailscale: $current"
+    UPDATE_AVAILABLE="false"
+  elif [[ "$current" == "$upstream" ]]; then
+    VERSION_LINE="Tailscale: $current (up to date)"
+    UPDATE_AVAILABLE="false"
+  else
+    VERSION_LINE="Tailscale: $current (update available: $upstream)"
+    UPDATE_AVAILABLE="true"
+  fi
+}
+
 switch_tailnet() {
   local tailnets
   local active
@@ -82,6 +112,7 @@ case $1 in
     T="green"
     F="red"
     I="none"
+    SHOW_VERSION="false"
     colors=()
 
     for arg in "${@:2}"; do
@@ -90,6 +121,9 @@ case $1 in
       case "$arg_lower" in
       ipv4 | ipv6)
         I="$arg_lower"
+        ;;
+      version)
+        SHOW_VERSION="true"
         ;;
       *)
         if [[ -n "$arg" ]]; then
@@ -133,8 +167,20 @@ case $1 in
 
     exitnode=$(jq -r '.Peer[]? | select(.ExitNode == true).DNSName | split(".")[0]' <<<"$status_json")
 
-    jq -nc --arg txt " exit-node: ${exitnode:-none}" --arg tip "Tailnet: ""$tailnet"$'\n\n'"$self"$'\n'"$peers" \
-      '{"text": $txt, "class": "connected", "alt": "connected", "tooltip": $tip}'
+    version_line=""
+    alt="connected"
+    class_json='"connected"'
+    if [[ "$SHOW_VERSION" == "true" ]]; then
+      tailscale_version_info
+      version_line="$VERSION_LINE"$'\n\n'
+      if [[ "$UPDATE_AVAILABLE" == "true" ]]; then
+        alt="update-available"
+        class_json='["connected", "update-available"]'
+      fi
+    fi
+
+    jq -nc --arg txt " exit-node: ${exitnode:-none}" --arg tip "$version_line""Tailnet: ""$tailnet"$'\n\n'"$self"$'\n'"$peers" --arg alt "$alt" --argjson class "$class_json" \
+      '{"text": $txt, "class": $class, "alt": $alt, "tooltip": $tip}'
   else
     echo "{\"text\":\"\",\"class\":\"stopped\",\"alt\":\"stopped\", \"tooltip\": \"The VPN is not active.\"}"
   fi

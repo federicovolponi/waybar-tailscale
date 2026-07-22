@@ -8,7 +8,8 @@
   // "format": "VPN {icon}",
   // "format-icons": {
   //     "connected": "󱠾 󰕥 ",
-  //     "stopped": "󱠾  "
+  //     "stopped": "󱠾  ",
+  //     "update-available": "󱠾 ⬆",
   // },
   "tooltip": true,
   "return-type": "json",
